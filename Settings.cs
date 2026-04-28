@@ -13,13 +13,28 @@ namespace AutoNexusHook;
 /// </summary>
 public class Settings
 {
+    // ===== Master toggle (governs BOTH AutoNexus and AutoPotion) =====
     public bool   Enabled            { get; set; } = true;
     public string HotKey             { get; set; } = "F10";   // any Keys enum name
     public bool   HotKeyCtrl         { get; set; } = false;
     public bool   HotKeyShift        { get; set; } = false;
     public bool   HotKeyAlt          { get; set; } = false;
+
+    // ===== AutoNexus =====
     public int    HpThresholdPercent { get; set; } = 50;       // legacy, no longer used
     public int    HpHardFloor        { get; set; } = 100;      // PRIMARY threshold: escape when HP <= this (flat HP)
+
+    // ===== AutoPotion (added in v1.1.0) =====
+    // Per-feature on/off so the user can run JUST AutoNexus, JUST
+    // AutoPot, or both. Both default to enabled for HP (most-wanted)
+    // and disabled for MP (mana usage is class-strategic — auto-pot
+    // can waste pots on overflow for some classes).
+    public bool   HpPotEnabled              { get; set; } = true;
+    public int    HpPotThresholdPercent     { get; set; } = 70;   // drink HP pot when HP% <= this
+    public bool   MpPotEnabled              { get; set; } = false;
+    public int    MpPotThresholdPercent     { get; set; } = 40;   // drink MP pot when MP% <= this
+
+    // ===== UI / notifications =====
     public bool   ShowSplashOnLoad   { get; set; } = true;
     public bool   ShowSaveBalloons   { get; set; } = true;
 

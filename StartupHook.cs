@@ -7,6 +7,7 @@ internal class StartupHook
     {
         try
         {
+            // === Bootstrap thread: settings + hotkey + UI + AutoNexus loop ===
             new Thread(() =>
             {
                 try
@@ -23,6 +24,22 @@ internal class StartupHook
                 }
             })
             { IsBackground = true, Name = "AutoNexusHook" }.Start();
+
+            // === Parallel thread for AutoPotion engine ===
+            // Runs alongside NexusEngine — both poll Player state every
+            // ~150–200 ms; cheap and they don't contend for any locks.
+            new Thread(() =>
+            {
+                try
+                {
+                    AutoNexusHook.PotionEngine.Run();
+                }
+                catch (Exception ex)
+                {
+                    AutoNexusHook.Notifier.LogError($"AutoPotion thread crashed: {ex}");
+                }
+            })
+            { IsBackground = true, Name = "AutoPotionHook" }.Start();
         }
         catch (Exception ex)
         {

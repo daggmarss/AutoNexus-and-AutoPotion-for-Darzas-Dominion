@@ -64,11 +64,19 @@ internal static class Notifier
 
         _enableItem = new ToolStripMenuItem
         {
-            Text = _settings.Enabled ? "✓ AutoNexus: ON" : "✗ AutoNexus: OFF",
+            Text = _settings.Enabled ? "✓ AutoNexus + AutoPotion: ON" : "✗ AutoNexus + AutoPotion: OFF",
             ForeColor = _settings.Enabled ? Color.LimeGreen : Color.IndianRed,
         };
         _enableItem.Click += (_, _) => Toggle();
         menu.Items.Add(_enableItem);
+
+        // Compact status row showing which sub-features are armed
+        var statusItem = new ToolStripMenuItem(BuildStatusLine())
+        {
+            Enabled = false,
+            ForeColor = Color.FromArgb(139, 148, 158),
+        };
+        menu.Items.Add(statusItem);
 
         var hotkeyItem = new ToolStripMenuItem($"Hotkey: {HotkeyHook.Format()}")
         {
@@ -112,11 +120,28 @@ internal static class Notifier
         _trayIcon = new NotifyIcon
         {
             Icon = SystemIcons.Shield,
-            Text = $"AutoNexus by PurBler — {(_settings.Enabled ? "ON" : "OFF")}",
+            Text = $"AutoNexus + AutoPotion by PurBler — {(_settings.Enabled ? "ON" : "OFF")}",
             Visible = true,
             ContextMenuStrip = menu,
         };
         _trayIcon.DoubleClick += (_, _) => Toggle();
+    }
+
+    /// <summary>
+    /// Compact one-line summary of which features are armed, shown
+    /// as a disabled item under the master toggle in the tray menu.
+    /// Example: "AutoNexus: HP≤100 | AutoPot: HP≤70%, MP off"
+    /// </summary>
+    private static string BuildStatusLine()
+    {
+        string nexus = $"Nexus: HP≤{_settings.HpHardFloor}";
+        string hpPot = _settings.HpPotEnabled
+            ? $"HP≤{_settings.HpPotThresholdPercent}%"
+            : "HP off";
+        string mpPot = _settings.MpPotEnabled
+            ? $"MP≤{_settings.MpPotThresholdPercent}%"
+            : "MP off";
+        return $"  {nexus}  |  Pot: {hpPot}, {mpPot}";
     }
 
     public static void Toggle()
@@ -138,9 +163,14 @@ internal static class Notifier
         Log($"Toggle → Enabled = {_settings.Enabled}");
     }
 
-    public static bool IsEnabled => _settings.Enabled;
-    public static int  HpPct     => _settings.HpThresholdPercent;
-    public static int  HpFloor   => _settings.HpHardFloor;
+    // ===== Read-only forwarders consumed by NexusEngine / PotionEngine =====
+    public static bool IsEnabled              => _settings.Enabled;            // master gate (hotkey-toggleable)
+    public static int  HpPct                  => _settings.HpThresholdPercent; // legacy (% threshold, unused)
+    public static int  HpFloor                => _settings.HpHardFloor;        // AutoNexus: escape when HP <= this
+    public static bool HpPotEnabled           => _settings.HpPotEnabled;       // AutoPotion HP enable
+    public static int  HpPotThresholdPercent  => _settings.HpPotThresholdPercent;
+    public static bool MpPotEnabled           => _settings.MpPotEnabled;       // AutoPotion MP enable
+    public static int  MpPotThresholdPercent  => _settings.MpPotThresholdPercent;
 
     private static void UpdateEnableUi()
     {
@@ -150,9 +180,15 @@ internal static class Notifier
         {
             _trayIcon.ContextMenuStrip!.BeginInvoke(new Action(() =>
             {
-                _enableItem.Text = _settings.Enabled ? "✓ AutoNexus: ON" : "✗ AutoNexus: OFF";
+                _enableItem.Text = _settings.Enabled ? "✓ AutoNexus + AutoPotion: ON" : "✗ AutoNexus + AutoPotion: OFF";
                 _enableItem.ForeColor = _settings.Enabled ? Color.LimeGreen : Color.IndianRed;
-                _trayIcon.Text = $"AutoNexus by PurBler — {(_settings.Enabled ? "ON" : "OFF")}";
+                _trayIcon.Text = $"AutoNexus + AutoPotion by PurBler — {(_settings.Enabled ? "ON" : "OFF")}";
+                // Refresh the status row (second item in the tray menu)
+                if (_trayIcon.ContextMenuStrip!.Items.Count > 1
+                    && _trayIcon.ContextMenuStrip!.Items[1] is ToolStripMenuItem status)
+                {
+                    status.Text = BuildStatusLine();
+                }
             }));
         }
         catch { }
@@ -178,29 +214,25 @@ internal static class Notifier
     private static void ShowSplashBalloon()
     {
         // Try once; SideChat may not exist yet at startup-hook time.
-        // Retry every 2 s for up to 30 s — by then the world is loaded.
+        // Retry every 2 s for up to 6 s — by then the world is loaded.
         new Thread(() =>
         {
-            string msg = $"AutoNexus loaded — Hotkey: {HotkeyHook.Format()} — With Love by PurBler <3";
+            string msg = $"AutoNexus + AutoPotion loaded — Hotkey: {HotkeyHook.Format()} — by PurBler <3";
             for (int i = 0; i < 15; i++)
             {
                 try { InGameMessage.Post(msg); }
                 catch { }
                 Thread.Sleep(2000);
-                // Check log for "chat path not resolved" — if it
-                // resolved at least once we can stop retrying.
-                // Simpler: just stop after first attempt that didn't
-                // hit the "unavailable" path (we don't have a return
-                // signal, so just do 3 retries = 6 sec).
                 if (i >= 2) break;
             }
-        }) { IsBackground = true, Name = "AutoNexus-Splash" }.Start();
+        }) { IsBackground = true, Name = "AutoNexusAutoPotion-Splash" }.Start();
 
         // Also tray balloon as fallback — friend definitely sees it.
         try
         {
             _trayIcon?.ShowBalloonTip(4000,
-                "AutoNexus loaded",
+                "AutoNexus + AutoPotion loaded",
+                $"Both engines active.\n" +
                 $"Hotkey: {HotkeyHook.Format()}\n" +
                 "Right-click tray icon for settings.\n" +
                 "With Love by PurBler <3",

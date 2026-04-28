@@ -5,6 +5,7 @@ bin/
 obj/
 dist/
 out/
+release-staging/
 *.user
 *.suo
 *.userosscache
