@@ -171,7 +171,19 @@ Even so, third-party tools of any kind may be against the game's Terms of Servic
 - Lost characters, items, or progress
 - Any other direct or indirect damages resulting from use of this code
 
-**Rights-holders / takedown:** If you represent Darza's Dominion and want this repository removed, please open an issue or contact me — I'll comply promptly. No specific persons or company names are referenced in this repository on purpose.
+**Rights-holders / takedown:** If you represent Darza's Dominion and want this repository removed, please open an issue **or message me directly on Discord: `purbler2.0`** — I'll comply promptly. No specific persons or company names are referenced in this repository on purpose.
+
+---
+
+## Contact
+
+The fastest way to reach me is **Discord: `purbler2.0`**.
+
+- 💬 Found a bug, want to chat about the code, have a feature idea? → Discord
+- 📝 Prefer a public, searchable thread? → [GitHub Issues](../../issues)
+- 🛡️ Rights-holder takedown request? → Discord (instant) or [GitHub Issue](../../issues/new)
+
+I'm a single person doing this in spare time — no support guarantees, but I'll usually respond within a day or two.
 
 ---
 
