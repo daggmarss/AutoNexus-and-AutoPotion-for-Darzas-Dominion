@@ -1,11 +1,14 @@
 # AutoNexus for Darza's Dominion
 
-[![.NET](https://img.shields.io/badge/.NET-9.0-512BD4)](https://dotnet.microsoft.com/) [![Platform](https://img.shields.io/badge/platform-Windows-0078D6)](#) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![.NET](https://img.shields.io/badge/.NET-9.0-512BD4)](https://dotnet.microsoft.com/) [![Platform](https://img.shields.io/badge/platform-Windows-0078D6)](#) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![Status](https://img.shields.io/badge/status-personal_project-lightgrey)](#)
 
-Lightweight quality-of-life tool for **Darza's Dominion** that auto-teleports your character to the Nexus when your HP drops below a configurable threshold. Saves your character from a permadeath when the network lags, when a boss spike-damages you, or when you panic and forget to press F5.
+> ### ℹ️ Personal hobby project
+> This is a **personal experimental project** shared publicly so other developers can read the code. It is **not actively promoted** for player use, **not maintained as a product**, and **not endorsed by anyone**. I publish it for educational and reverse-engineering interest — if you choose to run it, you do so entirely at your own risk. See the [Disclaimer](#disclaimer) section before using.
+
+A small **.NET startup-hook** for **Darza's Dominion** that auto-teleports your character to the Nexus when your HP drops below a configurable threshold. The original motivation was learning how the .NET `DOTNET_STARTUP_HOOKS` mechanism interacts with WinForms-based games and how to do safe, read-only reflection-based interop with a third-party process — escaping a dying character is just the example use-case it grew around.
 
 > **What it does in one sentence**
-> Polls your in-game HP every ~150 ms and fires the same `/escape` packet your client sends when you press F5 — but it does it for you, automatically, before you die.
+> Polls your in-game HP every ~150 ms and fires the same `/escape` packet the client sends when you press F5 — automatically, before you die.
 
 ![Tray menu screenshot placeholder](docs/screenshot-tray.png)
 
@@ -147,16 +150,28 @@ Built with .NET 9, Windows Forms (for tray UI), no external dependencies.
 
 ## Disclaimer
 
-**Use at your own risk.**
+**Educational / personal-use project. Use entirely at your own risk.**
 
-This tool reads memory of and sends packets to a third-party game (Darza's Dominion) via reflection on its loaded .NET assemblies. While AutoNexus does **not** modify game memory, exploit bugs, give combat advantage, or automate gameplay beyond an emergency escape, third-party tools of any kind may be against the game's Terms of Service.
+This is a **hobby project published for educational and research purposes** — specifically:
+- Learning the .NET `DOTNET_STARTUP_HOOKS` runtime mechanism
+- Practising reflection-based interop with a foreign .NET process
+- Studying Win32 low-level keyboard hooks (`WH_KEYBOARD_LL`)
+- Exploring tray-icon / notification UI patterns in WinForms
 
-The author assumes no responsibility for:
-- Account suspensions / bans
-- Lost characters or items
-- Any damages resulting from use
+It is **not commercial**, **not maintained as a product**, **not actively promoted** to any player community, and the author **does not encourage anyone to run it in their own game**. If you stumbled onto this repository and decide to try it anyway, that decision is yours alone.
 
-This is a hobby project published for educational and research purposes (reverse-engineering, .NET startup hooks, Win32 hooks, reflection-based interop). If you're the rights-holder of Darza's Dominion and would like the repository taken down, please open an issue.
+The tool reads memory of and sends a single emergency packet to a third-party game (Darza's Dominion) via reflection on its loaded .NET assemblies. AutoNexus deliberately does **not**:
+- modify any game memory
+- exploit bugs or unintended behaviour
+- give any combat advantage, gold/loot/XP gain, or competitive edge
+- automate gameplay beyond a one-shot emergency escape
+
+Even so, third-party tools of any kind may be against the game's Terms of Service. The author assumes **no responsibility whatsoever** for:
+- Account suspensions, bans, or other punitive action by the game's operators
+- Lost characters, items, or progress
+- Any other direct or indirect damages resulting from use of this code
+
+**Rights-holders / takedown:** If you represent Darza's Dominion and want this repository removed, please open an issue or contact me — I'll comply promptly. No specific persons or company names are referenced in this repository on purpose.
 
 ---
 
