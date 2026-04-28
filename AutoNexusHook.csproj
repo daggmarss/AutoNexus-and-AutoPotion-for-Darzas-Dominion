@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>AutoNexusHook</AssemblyName>
+    <RootNamespace>AutoNexusHook</RootNamespace>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- StartupHook DLLs must be plain DLLs, no app deps. -->
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <!-- Launcher is a separate project; its .cs files would otherwise
+       be picked up by this project because they're in a subfolder. -->
+  <ItemGroup>
+    <Compile Remove="Launcher\**" />
+    <None Remove="Launcher\**" />
+    <Compile Remove="dist\**" />
+    <None Remove="dist\**" />
+  </ItemGroup>
+
+</Project>
